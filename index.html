@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leadership Compass — SCARF Decision Challenge</title>
+<style>
+:root{
+  --ink:#17324d; --muted:#627387; --bg:#f4f7fb; --card:#fff;
+  --line:#dce4ed; --accent:#1769aa; --accent2:#0b7a75;
+  --good:#18794e; --warn:#a15c00; --bad:#b42318;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5}
+.container{max-width:1050px;margin:auto;padding:24px}
+.hero{background:linear-gradient(135deg,#17324d,#1769aa);color:white;border-radius:22px;padding:32px;box-shadow:0 14px 35px #17324d22}
+.hero h1{margin:0 0 8px;font-size:clamp(28px,5vw,46px)}
+.hero p{margin:6px 0;opacity:.94}
+.badge{display:inline-block;background:#ffffff22;border:1px solid #ffffff55;border-radius:999px;padding:6px 11px;margin:4px 4px 0 0;font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px;margin-top:20px;box-shadow:0 8px 24px #17324d0d}
+.hidden{display:none!important}
+h2,h3{margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.container{padding:14px}}
+label{font-weight:650;font-size:14px}
+input{width:100%;padding:12px;border:1px solid #cbd6e2;border-radius:10px;font-size:16px;margin-top:6px}
+button{border:0;border-radius:11px;padding:12px 18px;font-weight:750;font-size:15px;cursor:pointer}
+.primary{background:var(--accent);color:white}
+.secondary{background:#eaf1f8;color:var(--ink)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.topbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:15px}
+.progress{height:10px;background:#e8eef5;border-radius:99px;overflow:hidden}
+.progress>div{height:100%;background:var(--accent);width:0%;transition:.3s}
+.meta{color:var(--muted);font-size:14px}
+.scenario{font-size:20px;font-weight:700;margin:12px 0 22px}
+.options{display:grid;gap:12px}
+.option{background:white;border:2px solid var(--line);padding:17px;border-radius:13px;text-align:left;color:var(--ink);transition:.15s}
+.option:hover{border-color:#8db6d7;background:#f7fbff}
+.option.selected{border-color:var(--accent);background:#eef7ff}
+.feedback{margin-top:16px;padding:14px;border-radius:12px;background:#f4f8fb;border-left:4px solid var(--accent)}
+.actions{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:700px){.kpis{grid-template-columns:1fr}}
+.kpi{border:1px solid var(--line);border-radius:14px;padding:16px;background:#fbfdff}
+.kpi .num{font-size:30px;font-weight:800}
+.bars{display:grid;gap:15px}
+.barrow{display:grid;grid-template-columns:150px 1fr 55px;gap:10px;align-items:center}
+@media(max-width:600px){.barrow{grid-template-columns:105px 1fr 45px}}
+.bar{height:18px;background:#e7edf4;border-radius:99px;overflow:hidden}
+.fill{height:100%;background:var(--accent2);border-radius:99px}
+.interpret{padding:16px;border-radius:14px;background:#f4f8fb;margin-top:15px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-align:top}
+.small{font-size:13px;color:var(--muted)}
+.print{float:right}
+@media print{
+ body{background:white}.hero{box-shadow:none}.no-print{display:none!important}.card{box-shadow:none;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <section class="hero">
+    <div class="badge">PSB Leadership Simulation</div>
+    <div class="badge">20 Decisions</div>
+    <div class="badge">SCARF Assessment</div>
+    <div class="badge" id="musicBadge">♪ Calm music: Off</div>
+    <button class="secondary no-print" id="musicBtn" onclick="toggleMusic()" style="margin-top:10px">♪ Play calm music</button>
+    <h1>Leadership Compass</h1>
+    <p><strong>Lead Your Union Bank Branch — A PSB Leadership &amp; SCARF Decision Challenge</strong></p>
+    <p>Lead a public-sector bank branch through people, customer, business and compliance dilemmas. Your choices reveal how you balance Status, Certainty, Autonomy, Relatedness and Fairness.</p>
+  </section>
+
+  <section id="intro" class="card">
+    <h2>Welcome to Leadership Compass</h2>
+    <p><strong>A 20-decision SCARF leadership simulation for PSB branch leaders.</strong></p>
+    <p>You are the employee of Union Bank of India. There is no single “perfect” leadership style. Choose the response you would genuinely take in the situation. The assessment scores the behavioural impact of each choice across the five SCARF dimensions.</p>
+    <div class="grid">
+      <div><label>Participant name<input id="name" placeholder="Enter name"></label></div>
+      <div><label>Branch / role<input id="branch" placeholder=""></label></div>
+    </div>
+    <div class="card" style="margin-top:18px;background:#f8fbfe">
+      <h3>SCARF dimensions</h3>
+      <div class="grid">
+        <div><strong>Status</strong><br><span class="small">Recognition, respect and professional identity.</span></div>
+        <div><strong>Certainty</strong><br><span class="small">Clarity, predictability and transparency.</span></div>
+        <div><strong>Autonomy</strong><br><span class="small">Ownership, choice and appropriate discretion.</span></div>
+        <div><strong>Relatedness</strong><br><span class="small">Trust, belonging and psychological safety.</span></div>
+        <div><strong>Fairness</strong><br><span class="small">Consistency, procedural and distributive justice.</span></div>
+      </div>
+    </div>
+    <button class="primary" onclick="startGame()">Start 20-question challenge</button>
+  </section>
+
+  <section id="game" class="card hidden">
+    <div class="topbar">
+      <div><strong id="qnum">Question 1 of 20</strong><span class="meta" id="dimensionHint"></span></div>
+      <div class="meta" id="pct">5%</div>
+    </div>
+    <div class="progress"><div id="progressFill"></div></div>
+    <div class="scenario" id="scenario"></div>
+    <div class="options" id="options"></div>
+    <div id="feedback" class="feedback hidden"></div>
+    <div class="actions no-print">
+      <button class="secondary" id="prevBtn" onclick="previousQuestion()">← Previous</button>
+      <button class="primary" id="nextBtn" onclick="nextQuestion()" disabled>Choose a response →</button>
+    </div>
+  </section>
+
+  <section id="results" class="hidden">
+    <div class="card">
+      <button class="secondary print no-print" onclick="window.print()">Print / Save PDF</button>
+      <h2 id="resultTitle">Your SCARF Leadership Profile</h2>
+      <p id="resultSub"></p>
+      <div class="kpis">
+        <div class="kpi"><div class="small">Overall SCARF Index</div><div class="num" id="overall">—</div></div>
+        <div class="kpi"><div class="small">Decision Quality</div><div class="num" id="quality">—</div></div>
+        <div class="kpi"><div class="small">Assessment level</div><div class="num" id="level" style="font-size:20px">—</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>SCARF profile</h3>
+      <div class="bars" id="bars"></div>
+    </div>
+
+    <div class="card">
+      <h3>What your profile suggests</h3>
+      <div id="interpretations"></div>
+    </div>
+
+    <div class="card">
+      <h3>PSB leadership implications</h3>
+      <div id="implications"></div>
+    </div>
+
+    <div class="card">
+      <h3>Decision-by-decision review</h3>
+      <table>
+        <thead><tr><th>#</th><th>Scenario</th><th>Your response</th><th>SCARF signal</th></tr></thead>
+        <tbody id="review"></tbody>
+      </table>
+    </div>
+
+    <div class="card no-print">
+      <button class="primary" onclick="restart()">Retake assessment</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const dimensions = ["Status","Certainty","Autonomy","Relatedness","Fairness"];
+
+const questions = [
+{
+ scenario:"A high-performing officer has delivered strong business results for two years but says management only notices mistakes. What do you do?",
+ options:[
+  "Publicly acknowledge the results and discuss specific future responsibilities with the officer.",
+  "Tell the officer everyone is expected to perform and move on to the next target.",
+  "Give the officer a private thank-you but avoid creating expectations of special recognition.",
+  "Ask the whole team to nominate colleagues for recognition and use the nominations to decide."
+ ],
+ scores:[[2,1,1,2,1],[-1,1,0,-1,0],[1,0,0,1,1],[1,1,0,2,2]],
+ feedback:["Recognition plus meaningful responsibility strengthens professional standing.","Performance pressure without recognition may reduce perceived status.","Private recognition helps, but the impact may be limited if the concern is visibility.","A transparent team process can strengthen both recognition and fairness."]
+},
+{
+ scenario:"Head Office changes the branch's quarterly target halfway through the cycle. Staff are anxious because nobody knows how the new target will be assessed.",
+ options:[
+  "Immediately issue a revised target and tell staff to adjust.",
+  "Explain why the change occurred, what is known, what is not yet known, and create a short review cycle.",
+  "Wait until all details are final before communicating anything.",
+  "Tell staff to focus on effort because management will decide the final assessment later."
+ ],
+ scores:[[-1,-2,0,-1,-1],[1,2,1,1,2],[0,0,0,0,0],[-1,1,-1,0,-1]],
+ feedback:["A clear number without context may increase uncertainty.","Transparent boundaries and review points reduce uncertainty while preserving accountability.","Silence protects against misinformation but leaves employees in uncertainty.","Vague reassurance does little to create predictability."]
+},
+{
+ scenario:"A capable officer asks for authority to resolve routine customer service complaints without waiting for your approval each time.",
+ options:[
+  "Approve a defined decision limit, with escalation rules and periodic review.",
+  "Tell the officer all exceptions must come to you because accountability ultimately rests with you.",
+  "Let the officer decide anything that seems reasonable and deal with problems if they arise.",
+  "Ask the officer to first prepare a proposal for wider team discussion."
+ ],
+ scores:[[2,1,2,1,2],[-1,1,-2,0,1],[1,-1,2,-1,-2],[1,1,1,2,1]],
+ feedback:["Bounded delegation creates autonomy with control.","Centralising routine decisions signals low autonomy.","Broad freedom without guardrails can create risk and uncertainty.","Participation can build ownership, though the decision may remain slower."]
+},
+{
+ scenario:"Two employees are openly blaming each other for delays in account opening. The dispute is beginning to affect the rest of the team.",
+ options:[
+  "Meet both employees together, establish facts, and agree on a shared process.",
+  "Tell both employees to stop arguing and simply follow your instructions.",
+  "Speak separately to each employee and decide who is mainly responsible.",
+  "Ask a respected colleague to mediate while you monitor the outcome."
+ ],
+ scores:[[1,2,2,2,2],[-1,1,-1,-2,0],[-1,1,-1,-1,-1],[1,1,1,2,1]],
+ feedback:["Shared facts and process repair trust and psychological safety.","Commanding silence may stop visible conflict without repairing the relationship.","Assigning blame can deepen the divide before the process problem is solved.","Neutral mediation can rebuild trust while preserving managerial oversight."]
+},
+{
+ scenario:"Staff notice that high-value business targets have been allocated unevenly across officers. They ask why some workloads are much heavier.",
+ options:[
+  "Explain the allocation criteria and invite a review if the data show a genuine imbalance.",
+  "Tell staff that management knows best and targets are not open for discussion.",
+  "Equalise every target immediately, regardless of portfolio or market differences.",
+  "Ask staff to compete for the easier portfolios and reward whoever adapts fastest."
+ ],
+ scores:[[1,2,1,1,2],[-1,-1,-2,-1,-2],[1,1,0,1,1],[-2,-1,1,-2,-2]],
+ feedback:["Transparent criteria and evidence-based review strengthen fairness.","Opaque authority can damage perceptions of procedural fairness.","Equal treatment is not always equitable treatment; context matters.","Competition for favourable workloads can seriously damage trust and fairness."]
+},
+{
+ scenario:"A senior officer makes a significant operational mistake during a team meeting and looks embarrassed.",
+ options:[
+  "Correct the issue respectfully, separate the person from the mistake, and discuss learning privately.",
+  "Use the incident as an example so everyone understands the consequences.",
+  "Say nothing in the meeting and quietly correct the work yourself.",
+  "Ask the officer to explain the mistake to the team and suggest a corrective action."
+ ],
+ scores:[[2,2,1,2,2],[-2,1,-1,-2,-1],[0,1,-1,1,1],[1,2,2,2,2]],
+ feedback:["Protecting dignity while addressing accountability supports status and learning.","Public embarrassment may undermine status and psychological safety.","Silence protects dignity but misses an opportunity for shared learning.","Giving the officer voice can restore ownership and status when handled respectfully."]
+},
+{
+ scenario:"A new compliance circular arrives with complex requirements and staff are interpreting it differently.",
+ options:[
+  "Tell everyone to read the circular themselves and use their judgement.",
+  "Create a one-page operating summary, clarify what is confirmed, and schedule a Q&A.",
+  "Wait for a formal training session from Head Office before discussing it.",
+  "Ask experienced staff to interpret it informally and let each team member decide how to apply it."
+ ],
+ scores:[[-1,-1,1,-1,-1],[2,2,1,2,2],[0,0,0,0,1],[0,-1,1,0,-1]],
+ feedback:["Individual interpretation can increase uncertainty and inconsistent application.","A practical summary and Q&A make expectations predictable and reduce compliance ambiguity.","Waiting may preserve accuracy but leaves the team uncertain in the meantime.","Informal interpretation may empower staff but can create inconsistent decisions."]
+},
+{
+ scenario:"Your experienced operations officer wants discretion to organise routine work during peak hours.",
+ options:[
+  "Give the officer discretion over the workflow, with service and compliance boundaries.",
+  "Keep the workflow exactly as you designed it so everyone follows one method.",
+  "Let the officer change anything without needing to explain the changes.",
+  "Ask the officer to trial a new workflow for two weeks and report the results."
+ ],
+ scores:[[2,1,2,1,2],[-1,1,-2,0,1],[1,-1,2,-1,-2],[2,2,2,2,2]],
+ feedback:["Autonomy within clear boundaries is a strong empowerment approach.","Rigid control limits ownership and signals low autonomy.","Unbounded discretion can create risk and uncertainty.","A time-bound experiment combines autonomy, learning, predictability and accountability."]
+},
+{
+ scenario:"A new employee is technically strong but rarely speaks in team discussions and seems excluded from informal conversations.",
+ options:[
+  "Pair the employee with a buddy and deliberately create opportunities for them to contribute.",
+  "Leave them alone; confident employees will naturally integrate.",
+  "Ask the team to include the new employee more often, without changing your own behaviour.",
+  "Invite the employee to lead a small, low-risk discussion on an area they know well."
+ ],
+ scores:[[1,1,2,2,2],[-1,0,1,-1,0],[0,1,0,1,1],[2,1,2,2,1]],
+ feedback:["Structured inclusion helps build belonging and confidence.","Non-intervention may allow exclusion patterns to continue.","A team reminder helps, but leadership behaviour matters too.","A meaningful role can create both belonging and professional standing."]
+},
+{
+ scenario:"An employee questions why another colleague received a development opportunity while they did not.",
+ options:[
+  "Explain the selection criteria and offer a development conversation based on the employee's goals.",
+  "Tell them the other employee was chosen because management trusts them more.",
+  "Offer the same opportunity immediately to avoid further complaints.",
+  "Review the selection process and, if appropriate, publish clearer criteria for future opportunities."
+ ],
+ scores:[[1,2,2,2,2],[-2,-1,-2,-2,-2],[1,0,1,1,1],[2,2,1,2,2]],
+ feedback:["Explaining criteria and offering a path forward supports fairness and autonomy.","Personalised but opaque judgement can damage fairness and trust.","Immediate equalisation may feel fair but may not address the underlying process.","Improving the process creates durable procedural fairness."]
+},
+{
+ scenario:"The branch has missed its monthly business target. A high performer is visibly frustrated and says the team is letting them down.",
+ options:[
+  "Review the data together, recognise what worked, and agree on a focused recovery plan.",
+  "Tell the team that missing the target is unacceptable and increase daily pressure.",
+  "Ask the high performer to take charge of the recovery effort.",
+  "Hold a blame-free review focused only on what caused the shortfall."
+ ],
+ scores:[[2,2,2,2,2],[-2,-1,-2,-2,-2],[1,0,2,1,0],[0,2,1,2,2]],
+ feedback:["Data plus recognition and a recovery plan preserves dignity while restoring performance.","Pressure can create urgency but may damage status, autonomy and relatedness.","Delegating leadership can empower a strong performer, but needs support and fairness.","A blame-free review builds learning; it should still end with clear accountability."]
+},
+{
+ scenario:"Staff ask what the branch's priorities will be next quarter, but Head Office has not yet finalised the plan.",
+ options:[
+  "Give staff a provisional priority map, clearly marking what may change.",
+  "Say nothing until the official plan arrives.",
+  "Tell staff to continue doing everything because all activities remain important.",
+  "Ask each team to decide its own priorities until Head Office confirms them."
+ ],
+ scores:[[2,2,1,2,2],[0,-2,0,-1,0],[-1,-2,-1,-1,-1],[1,-1,2,1,-1]],
+ feedback:["A provisional map with explicit uncertainty gives people a usable sense of direction.","Waiting preserves accuracy but leaves employees without predictability.","Treating everything as a priority creates overload and uncertainty.","Local autonomy can help, but without a shared framework it may create fragmentation."]
+},
+{
+ scenario:"A relationship manager asks for more discretion to negotiate routine service recovery with important customers.",
+ options:[
+  "Set a financial/authority limit, define exceptions and review outcomes weekly.",
+  "Keep all service recovery decisions with yourself.",
+  "Allow full discretion because the relationship manager knows the customers best.",
+  "Create a small panel of officers who can approve each other's service recovery decisions."
+ ],
+ scores:[[2,2,2,1,2],[-1,1,-2,0,1],[1,-1,2,1,-2],[1,1,1,2,2]],
+ feedback:["Clear limits enable autonomy without weakening governance.","Centralisation reduces autonomy and may slow customer resolution.","Full discretion can increase autonomy but creates risk and fairness concerns.","Peer approval builds shared ownership, though it can slow decisions."]
+},
+{
+ scenario:"Business staff accuse operations staff of being too rigid; operations staff accuse business staff of ignoring controls.",
+ options:[
+  "Bring both sides together around customer cases and agree on shared service and control principles.",
+  "Tell operations to become more flexible because business growth is the priority.",
+  "Tell business staff that compliance always comes first and end the discussion.",
+  "Create separate targets for business and operations so each team can focus on its own role."
+ ],
+ scores:[[2,2,2,2,2],[-1,0,-1,-2,-2],[0,1,-1,-2,1],[-1,1,1,-2,-1]],
+ feedback:["A shared purpose reduces silo behaviour while preserving controls.","Taking one side can intensify inter-team conflict.","Controls matter, but dismissing the business perspective damages relatedness.","Separate targets may clarify accountability but can reinforce silos."]
+},
+{
+ scenario:"A staff member says the incentive distribution is biased toward one portfolio.",
+ options:[
+  "Share the calculation logic, check the data, and correct any genuine inconsistency.",
+  "Defend the distribution because it has already been approved.",
+  "Split the incentive equally this time to keep the peace.",
+  "Ask an independent committee to review the distribution and publish the criteria."
+ ],
+ scores:[[2,2,1,2,2],[-1,-1,-1,-2,-2],[1,0,1,1,1],[2,2,0,2,2]],
+ feedback:["Evidence, transparency and correction strengthen procedural fairness.","Approval alone does not remove perceptions of unfairness.","Equal splitting may feel fair but may violate the intended incentive logic.","Independent review and transparent criteria create stronger fairness safeguards."]
+},
+{
+ scenario:"A strong performer makes a small error. Under pressure, you are tempted to criticise them publicly to signal standards to the team.",
+ options:[
+  "Address the error directly but privately, and reinforce the performance standard.",
+  "Correct them publicly so everyone understands that no one gets special treatment.",
+  "Ignore the error because the employee's overall performance is strong.",
+  "Ask the employee to explain what happened and lead a short team learning point if they are comfortable."
+ ],
+ scores:[[2,2,1,2,2],[-2,1,-1,-2,-1],[0,-1,-1,0,-2],[1,2,2,2,2]],
+ feedback:["Private accountability protects dignity while maintaining standards.","Public criticism can damage status and psychological safety.","Ignoring errors undermines fairness and certainty about standards.","Voluntary learning leadership can preserve status and increase shared learning."]
+},
+{
+ scenario:"A policy change has been communicated to the branch through a short email with no examples. Staff interpret it differently.",
+ options:[
+  "Translate the policy into practical examples, identify open questions and create a single clarification channel.",
+  "Forward the email again and tell staff to follow it strictly.",
+  "Ask each department to create its own interpretation.",
+  "Tell staff to continue with the old process until someone complains."
+ ],
+ scores:[[2,2,1,2,2],[-1,1,-1,-1,-1],[0,-1,1,0,-1],[-2,-2,-2,-2,-2]],
+ feedback:["Practical interpretation plus one clarification channel reduces uncertainty and fragmentation.","Repeating an unclear message does not create clarity.","Local interpretation may increase autonomy but creates inconsistent practice.","Continuing an outdated process creates high operational and compliance uncertainty."]
+},
+{
+ scenario:"An officer suggests a faster customer onboarding process that could reduce waiting time, but it changes your team's current routine.",
+ options:[
+  "Ask the officer to test the idea on a small sample with clear controls and measures.",
+  "Reject it because the current process is approved and familiar.",
+  "Tell the officer to implement it immediately if they believe it works.",
+  "Ask the officer to prepare a proposal and invite the team to challenge the idea before a pilot."
+ ],
+ scores:[[2,2,2,2,2],[-1,2,-2,-1,1],[1,-2,2,0,-2],[2,2,1,2,2]],
+ feedback:["A controlled pilot gives autonomy while protecting certainty and risk controls.","Familiarity alone is not a reason to suppress initiative.","Immediate implementation maximises autonomy but creates uncertainty and risk.","Challenge before pilot creates ownership, learning and shared confidence."]
+},
+{
+ scenario:"After a management decision on leave allocation, several employees say they no longer trust the branch's leadership.",
+ options:[
+  "Explain the decision criteria, acknowledge the impact, hear concerns and correct the process if evidence warrants it.",
+  "Tell staff that management decisions cannot always be understood by everyone.",
+  "Reverse the decision immediately regardless of the facts.",
+  "Ask employees to nominate a committee to make all future leave decisions."
+ ],
+ scores:[[2,2,1,2,2],[-2,-1,-2,-2,-2],[1,0,0,1,1],[2,2,2,2,2]],
+ feedback:["Transparency plus willingness to correct builds trust and procedural fairness.","Dismissive communication damages relatedness and fairness.","Reversal without evidence can create uncertainty and inconsistency.","Shared governance can build trust, but full delegation may be impractical."]
+},
+{
+ scenario:"You have one additional experienced officer available. One option is to place them in a high-growth portfolio; another is to strengthen a stressed operations desk. Both teams make strong cases.",
+ options:[
+  "Use transparent criteria based on risk, customer impact, workload and strategic value, then explain the decision.",
+  "Give the officer to the team with the stronger revenue potential.",
+  "Split the officer's time equally even if the work demands are different.",
+  "Ask both teams to compete for the resource and let the officer choose."
+ ],
+ scores:[[2,2,1,2,2],[-1,0,-1,-2,-2],[1,-1,0,1,1],[1,0,2,1,-1]],
+ feedback:["Evidence-based criteria and explanation support fairness, certainty and trust.","Revenue-only allocation may neglect risk, workload and customer impact.","Equal time is simple but may not be equitable to actual need.","Employee choice creates autonomy but may avoid the manager's responsibility for fair allocation."]
+}
+];
+
+
+let audioCtx=null, masterGain=null, musicTimer=null, musicOn=false;
+const ambientNotes=[220.00,261.63,329.63,392.00,329.63,293.66,261.63,329.63];
+let ambientStep=0;
+
+function startMusic(){
+  if(musicOn) return;
+  const AC=window.AudioContext||window.webkitAudioContext;
+  if(!AC){ alert("Your browser does not support background audio."); return; }
+  audioCtx=audioCtx||new AC();
+  if(audioCtx.state==="suspended") audioCtx.resume();
+  masterGain=audioCtx.createGain();
+  masterGain.gain.setValueAtTime(0.0001,audioCtx.currentTime);
+  masterGain.gain.exponentialRampToValueAtTime(0.035,audioCtx.currentTime+2);
+  masterGain.connect(audioCtx.destination);
+  musicOn=true;
+  ambientStep=0;
+  playAmbient();
+  musicTimer=setInterval(playAmbient, 2600);
+  document.getElementById("musicBtn").textContent="♪ Pause calm music";
+  document.getElementById("musicBadge").textContent="♪ Calm music: On";
+}
+
+function playAmbient(){
+  if(!musicOn || !audioCtx || !masterGain) return;
+  const now=audioCtx.currentTime;
+  const root=ambientNotes[ambientStep%ambientNotes.length];
+  ambientStep++;
+  [root, root*1.25, root*1.5].forEach((freq,k)=>{
+    const osc=audioCtx.createOscillator();
+    const gain=audioCtx.createGain();
+    osc.type=k===0?"sine":"triangle";
+    osc.frequency.setValueAtTime(freq,now);
+    gain.gain.setValueAtTime(0.0001,now);
+    gain.gain.exponentialRampToValueAtTime(0.018/(k+1),now+0.35);
+    gain.gain.exponentialRampToValueAtTime(0.0001,now+2.25);
+    osc.connect(gain); gain.connect(masterGain);
+    osc.start(now); osc.stop(now+2.3);
+  });
+}
+
+function stopMusic(){
+  if(!musicOn) return;
+  musicOn=false;
+  if(musicTimer){clearInterval(musicTimer); musicTimer=null;}
+  if(masterGain && audioCtx){
+    const now=audioCtx.currentTime;
+    masterGain.gain.cancelScheduledValues(now);
+    masterGain.gain.setValueAtTime(Math.max(masterGain.gain.value,0.0001),now);
+    masterGain.gain.exponentialRampToValueAtTime(0.0001,now+1.2);
+  }
+  document.getElementById("musicBtn").textContent="♪ Play calm music";
+  document.getElementById("musicBadge").textContent="♪ Calm music: Off";
+}
+function toggleMusic(){ musicOn ? stopMusic() : startMusic(); }
+
+let current=0;
+let answers=new Array(questions.length).fill(null);
+let participant="", branch="";
+
+function startGame(){
+  // Music is optional and starts only when the participant presses Play.
+  participant=document.getElementById("name").value.trim() || "Participant";
+  branch=document.getElementById("branch").value.trim() || "PSB Branch";
+  document.getElementById("intro").classList.add("hidden");
+  document.getElementById("game").classList.remove("hidden");
+  renderQuestion();
+}
+function renderQuestion(){
+  const q=questions[current];
+  const order = [0,1,2,3];
+  // Deterministic per-question shuffle so the correct/highest-scoring response
+  // is not repeatedly shown as option A, while remaining stable during review.
+  let seed = 7919 * (current + 1);
+  for(let i=order.length-1;i>0;i--){
+    seed = (seed * 9301 + 49297) % 233280;
+    const j = Math.floor((seed / 233280) * (i + 1));
+    [order[i], order[j]] = [order[j], order[i]];
+  }
+  q._displayOrder = order;
+  document.getElementById("qnum").textContent=`Question ${current+1} of ${questions.length}`;
+  document.getElementById("pct").textContent=`${Math.round((current+1)/questions.length*100)}%`;
+  document.getElementById("progressFill").style.width=`${(current+1)/questions.length*100}%`;
+  document.getElementById("scenario").textContent=q.scenario;
+  document.getElementById("dimensionHint").textContent="  •  Choose the response you would genuinely use";
+  const wrap=document.getElementById("options"); wrap.innerHTML="";
+  q._displayOrder.forEach((actualIndex,displayIndex)=>{
+    const text=q.options[actualIndex];
+    const b=document.createElement("button");
+    b.className="option"+(answers[current]===actualIndex?" selected":"");
+    b.innerHTML=`<strong>${String.fromCharCode(65+displayIndex)}.</strong> ${text}`;
+    b.onclick=()=>selectAnswer(actualIndex);
+    wrap.appendChild(b);
+  });
+  const f=document.getElementById("feedback");
+  if(answers[current]!==null){
+    f.classList.remove("hidden");
+    f.textContent=q.feedback[answers[current]];
+  }else f.classList.add("hidden");
+  document.getElementById("prevBtn").disabled=current===0;
+  const next=document.getElementById("nextBtn");
+  next.disabled=answers[current]===null;
+  next.textContent=current===questions.length-1?"Finish assessment →":"Next decision →";
+}
+function selectAnswer(i){
+  answers[current]=i;
+  document.querySelectorAll(".option").forEach((b,j)=>b.classList.toggle("selected",j===i));
+  const f=document.getElementById("feedback");
+  f.classList.remove("hidden"); f.textContent=questions[current].feedback[i];
+  const next=document.getElementById("nextBtn"); next.disabled=false;
+  next.textContent=current===questions.length-1?"Finish assessment →":"Next decision →";
+}
+function previousQuestion(){if(current>0){current--;renderQuestion();}}
+function nextQuestion(){
+  if(answers[current]===null)return;
+  if(current<questions.length-1){current++;renderQuestion();}else showResults();
+}
+function scoreAssessment(){
+  const totals={Status:0,Certainty:0,Autonomy:0,Relatedness:0,Fairness:0};
+  const counts={Status:0,Certainty:0,Autonomy:0,Relatedness:0,Fairness:0};
+  let quality=0;
+  answers.forEach((a,qi)=>{
+    const s=questions[qi].scores[a];
+    s.forEach((v,d)=>{
+      totals[dimensions[d]]+=v; counts[dimensions[d]]++;
+    });
+    quality += s.reduce((x,y)=>x+y,0)/10;
+  });
+  const scores={};
+  dimensions.forEach(d=>{
+    scores[d]=Math.round(((totals[d]/counts[d])+2)/4*100);
+  });
+  return {scores,quality:Math.round((quality/questions.length+1)/2*100)};
+}
+function levelFor(x){
+  if(x>=85)return "Exceptional";
+  if(x>=75)return "Strong";
+  if(x>=60)return "Developing";
+  if(x>=45)return "Watch";
+  return "High risk";
+}
+function interpretation(d,v){
+ const bands = v>=80 ? "a strong and consistent" : v>=65 ? "a generally positive" : v>=50 ? "a mixed" : "an area needing deliberate";
+ const advice={
+  Status:"Protect dignity while recognising contribution. Use specific recognition, constructive feedback and meaningful responsibility.",
+  Certainty:"Make priorities, decision rules and changes explicit. When information is incomplete, state what is known, unknown and when the next update will come.",
+  Autonomy:"Delegate with clear boundaries rather than either micromanaging or abandoning control. Use pilots, decision limits and review points.",
+  Relatedness:"Build trust through listening, inclusion, shared problem-solving and psychological safety—especially across business and operations.",
+  Fairness:"Explain criteria, use evidence, distinguish equality from equity, and correct genuine inconsistencies transparently."
+ };
+ return `<div class="interpret"><strong>${d}: ${v}/100 — ${levelFor(v)}</strong><p>${bands} result. ${advice[d]}</p></div>`;
+}
+function showResults(){
+  if(musicOn) stopMusic();
+  const r=scoreAssessment();
+  const vals=Object.values(r.scores);
+  const overall=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+  document.getElementById("game").classList.add("hidden");
+  document.getElementById("results").classList.remove("hidden");
+  document.getElementById("resultTitle").textContent=`${participant}'s SCARF Leadership Profile`;
+  document.getElementById("resultSub").textContent=`${branch} • 20-decision Leadership Compass simulation`;
+  document.getElementById("overall").textContent=overall;
+  document.getElementById("quality").textContent=r.quality;
+  document.getElementById("level").textContent=levelFor(overall);
+  const bars=document.getElementById("bars"); bars.innerHTML="";
+  dimensions.forEach(d=>{
+    const v=r.scores[d];
+    bars.innerHTML+=`<div class="barrow"><strong>${d}</strong><div class="bar"><div class="fill" style="width:${v}%"></div></div><strong>${v}</strong></div>`;
+  });
+  document.getElementById("interpretations").innerHTML=dimensions.map(d=>interpretation(d,r.scores[d])).join("");
+  const sorted=[...dimensions].sort((a,b)=>r.scores[b]-r.scores[a]);
+  const strong=sorted.slice(0,2).join(" and ");
+  const develop=sorted.slice(-2).join(" and ");
+  document.getElementById("implications").innerHTML=`
+    <p><strong>Likely strengths:</strong> ${strong}. Use these strengths deliberately when handling targets, customer service, staff development and change.</p>
+    <p><strong>Priority development:</strong> ${develop}. These dimensions are the best candidates for behavioural experiments over the next 30–60 days.</p>
+    <p><strong>PSB balance principle:</strong> A strong branch leader does not maximise one dimension at the expense of governance. The strongest responses tend to combine people impact with business discipline, customer outcomes and risk/compliance.</p>
+    <p><strong>Suggested coaching question:</strong> “What did my decision make the employee predict, feel they controlled, believe about their standing, believe about our relationship, and believe about fairness?”</p>`;
+  const tbody=document.getElementById("review"); tbody.innerHTML="";
+  answers.forEach((a,i)=>{
+    const s=questions[i].scores[a];
+    const avg=s.reduce((x,y)=>x+y,0)/s.length;
+    const signal=avg>=1.2?"Strong SCARF-supportive":avg>=0.4?"Generally supportive":avg>-0.4?"Mixed":"Potential SCARF threat";
+    tbody.innerHTML+=`<tr><td>${i+1}</td><td>${questions[i].scenario}</td><td>${String.fromCharCode(65+a)}. ${questions[i].options[a]}</td><td>${signal}</td></tr>`;
+  });
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function restart(){
+  if(musicOn) stopMusic();
+  current=0; answers=new Array(questions.length).fill(null);
+  document.getElementById("results").classList.add("hidden");
+  document.getElementById("intro").classList.remove("hidden");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+</script>
+</body>
+</html>
