@@ -56,6 +56,42 @@ th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-
 @media print{
  body{background:white}.hero{box-shadow:none}.no-print{display:none!important}.card{box-shadow:none;break-inside:avoid}
 }
+
+.modal{position:fixed;inset:0;background:rgba(15,35,55,.58);display:flex;align-items:center;justify-content:center;padding:18px;z-index:1000}
+.modal.hidden{display:none}
+.modal-card{background:#fff;max-width:720px;width:100%;max-height:88vh;overflow:auto;border-radius:20px;padding:28px;box-shadow:0 25px 70px rgba(0,0,0,.25)}
+.modal-card h2{margin:0 0 8px;color:var(--ink)}
+.modal-section{padding:15px;border-radius:13px;margin:12px 0}
+.modal-your{background:#eef7ff;border-left:4px solid var(--accent)}
+.modal-best{background:#eef9f2;border-left:4px solid var(--good)}
+.modal-explain{background:#f7f8fa;border-left:4px solid #7a8795}
+.best-label{font-weight:800;color:var(--good);font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+.your-label{font-weight:800;color:var(--accent);font-size:13px;text-transform:uppercase;letter-spacing:.5px}
+
+/* Corporate Blue & Red Theme */
+:root{--navy:#063B70;--blue:#0057A8;--blue2:#0A6CCB;--red:#C62828;--red2:#E53935;--ink:#17324D;--muted:#64778A;--bg:#F4F7FB;--line:#D8E2ED;--accent:#0057A8}
+body{background:radial-gradient(circle at 90% 0%,rgba(0,87,168,.10),transparent 28%),linear-gradient(180deg,#F7FAFD 0%,#EEF3F8 100%);color:var(--ink)}
+body:before{content:"";display:block;height:6px;background:linear-gradient(90deg,var(--red) 0 18%,var(--blue) 18% 100%);position:fixed;top:0;left:0;right:0;z-index:2000}
+header,.hero,.topbar{background:linear-gradient(135deg,#063B70 0%,#0057A8 72%,#0A6CCB 100%)!important;color:#fff!important;border-color:rgba(255,255,255,.18)!important}
+header h1,header p,.hero h1,.hero p,.topbar h1,.topbar p{color:#fff!important}
+.badge{background:rgba(255,255,255,.14)!important;border:1px solid rgba(255,255,255,.28)!important;color:#fff!important}
+.container,.card,.panel,.question-card,.results-card{border:1px solid var(--line)!important;box-shadow:0 10px 30px rgba(6,59,112,.08)!important;border-radius:18px!important}
+button.primary,.primary{background:linear-gradient(135deg,var(--red),var(--red2))!important;border-color:var(--red)!important;color:#fff!important;box-shadow:0 7px 18px rgba(198,40,40,.22)!important}
+button.secondary,.secondary{background:#fff!important;color:var(--blue)!important;border:1px solid #B9CDE0!important}
+.option{background:#fff!important;border:1.5px solid #D4E0EC!important;color:var(--ink)!important}
+.option:hover{border-color:var(--blue)!important;background:#F3F8FD!important}
+.option.selected{border-color:var(--blue)!important;background:#EAF3FB!important;box-shadow:0 0 0 3px rgba(0,87,168,.10)!important}
+.progress,.progress-bar{background:#DCE8F3!important}
+.progress-fill,.progress-bar-fill{background:linear-gradient(90deg,var(--blue),var(--blue2))!important}
+h1,h2,h3,h4{color:var(--navy)}
+.modal{background:rgba(3,29,55,.68)!important;backdrop-filter:blur(3px)}
+.modal-card{border-top:5px solid var(--red);box-shadow:0 28px 80px rgba(0,0,0,.28)!important}
+.modal-your{background:#EEF6FF!important;border-left-color:var(--blue)!important}
+.modal-best{background:#EFF9F3!important}
+.modal-explain{background:#F7F9FB!important;border-left-color:var(--red)!important}
+.your-label{color:var(--blue)!important}
+input,textarea,select{border:1px solid #C8D7E5!important;background:#fff!important}
+input:focus,textarea:focus,select:focus{border-color:var(--blue)!important;box-shadow:0 0 0 3px rgba(0,87,168,.10)!important;outline:none}
 </style>
 </head>
 <body>
@@ -106,6 +142,26 @@ th,td{text-align:left;padding:10px;border-bottom:1px solid var(--line);vertical-
       <button class="primary" id="nextBtn" onclick="nextQuestion()" disabled>Choose a response →</button>
     </div>
   </section>
+
+
+  <div id="choiceModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <h2 id="modalTitle">Decision feedback</h2>
+      <div class="modal-section modal-your">
+        <div class="your-label">Your choice</div>
+        <div id="modalYour"></div>
+      </div>
+      <div class="modal-section modal-best">
+        <div class="best-label">Best SCARF-aligned response</div>
+        <div id="modalBest"></div>
+      </div>
+      <div class="modal-section modal-explain">
+        <strong>Why?</strong>
+        <div id="modalWhy"></div>
+      </div>
+      <button class="primary" style="width:100%;margin-top:8px" onclick="closeChoiceModal()">Close &amp; continue →</button>
+    </div>
+  </div>
 
   <section id="results" class="hidden">
     <div class="card">
@@ -164,7 +220,7 @@ const questions = [
  feedback:["Recognition plus meaningful responsibility strengthens professional standing.","Performance pressure without recognition may reduce perceived status.","Private recognition helps, but the impact may be limited if the concern is visibility.","A transparent team process can strengthen both recognition and fairness."]
 },
 {
- scenario:"Controlling Office changes the branch's quarterly target halfway through the cycle. Staff are anxious because nobody knows how the new target will be assessed.",
+ scenario:"Head Office changes the branch's quarterly target halfway through the cycle. Staff are anxious because nobody knows how the new target will be assessed.",
  options:[
   "Immediately issue a revised target and tell staff to adjust.",
   "Explain why the change occurred, what is known, what is not yet known, and create a short review cycle.",
@@ -223,7 +279,7 @@ const questions = [
  options:[
   "Tell everyone to read the circular themselves and use their judgement.",
   "Create a one-page operating summary, clarify what is confirmed, and schedule a Q&A.",
-  "Wait for a formal training session from Controlling Office before discussing it.",
+  "Wait for a formal training session from Head Office before discussing it.",
   "Ask experienced staff to interpret it informally and let each team member decide how to apply it."
  ],
  scores:[[-1,-1,1,-1,-1],[2,2,1,2,2],[0,0,0,0,1],[0,-1,1,0,-1]],
@@ -274,12 +330,12 @@ const questions = [
  feedback:["Data plus recognition and a recovery plan preserves dignity while restoring performance.","Pressure can create urgency but may damage status, autonomy and relatedness.","Delegating leadership can empower a strong performer, but needs support and fairness.","A blame-free review builds learning; it should still end with clear accountability."]
 },
 {
- scenario:"Staff ask what the branch's priorities will be next quarter, but Controlling Office has not yet finalised the plan.",
+ scenario:"Staff ask what the branch's priorities will be next quarter, but Head Office has not yet finalised the plan.",
  options:[
   "Give staff a provisional priority map, clearly marking what may change.",
   "Say nothing until the official plan arrives.",
   "Tell staff to continue doing everything because all activities remain important.",
-  "Ask each team to decide its own priorities until Controlling Office confirms them."
+  "Ask each team to decide its own priorities until Head Office confirms them."
  ],
  scores:[[2,2,1,2,2],[0,-2,0,-1,0],[-1,-2,-1,-1,-1],[1,-1,2,1,-1]],
  feedback:["A provisional map with explicit uncertainty gives people a usable sense of direction.","Waiting preserves accuracy but leaves employees without predictability.","Treating everything as a priority creates overload and uncertainty.","Local autonomy can help, but without a shared framework it may create fragmentation."]
@@ -469,10 +525,7 @@ function renderQuestion(){
     wrap.appendChild(b);
   });
   const f=document.getElementById("feedback");
-  if(answers[current]!==null){
-    f.classList.remove("hidden");
-    f.textContent=q.feedback[answers[current]];
-  }else f.classList.add("hidden");
+  f.classList.add("hidden");
   document.getElementById("prevBtn").disabled=current===0;
   const next=document.getElementById("nextBtn");
   next.disabled=answers[current]===null;
@@ -480,14 +533,43 @@ function renderQuestion(){
 }
 function selectAnswer(i){
   answers[current]=i;
-  document.querySelectorAll(".option").forEach((b,j)=>b.classList.toggle("selected",j===i));
-  const f=document.getElementById("feedback");
-  f.classList.remove("hidden"); f.textContent=questions[current].feedback[i];
-  const next=document.getElementById("nextBtn"); next.disabled=false;
+  document.querySelectorAll(".option").forEach((b,j)=>{
+    const actualIndex=questions[current]._displayOrder[j];
+    b.classList.toggle("selected",actualIndex===i);
+  });
+  const q=questions[current];
+  const quality=q.scores.map((arr,idx)=>({
+    idx,
+    total:arr.reduce((a,b)=>a+b,0)
+  }));
+  const bestScore=Math.max(...quality.map(x=>x.total));
+  const best=quality.find(x=>x.total===bestScore).idx;
+
+  document.getElementById("modalYour").textContent =
+    `${String.fromCharCode(65 + q._displayOrder.indexOf(i))}. ${q.options[i]}`;
+
+  document.getElementById("modalBest").textContent =
+    `${String.fromCharCode(65 + q._displayOrder.indexOf(best))}. ${q.options[best]}`;
+
+  document.getElementById("modalWhy").textContent =
+    q.feedback[best] +
+    (best===i
+      ? " Your choice is the strongest SCARF-aligned response for this scenario."
+      : " Your response is still part of your leadership profile. Use the best response as a reflection point for the SCARF trade-offs in this situation.");
+
+  document.getElementById("choiceModal").classList.remove("hidden");
+  document.getElementById("nextBtn").disabled=true;
+}
+
+function closeChoiceModal(){
+  document.getElementById("choiceModal").classList.add("hidden");
+  const next=document.getElementById("nextBtn");
+  next.disabled=answers[current]===null;
   next.textContent=current===questions.length-1?"Finish assessment →":"Next decision →";
 }
-function previousQuestion(){if(current>0){current--;renderQuestion();}}
+function previousQuestion(){document.getElementById('choiceModal').classList.add('hidden');if(current>0){current--;renderQuestion();}}
 function nextQuestion(){
+  document.getElementById('choiceModal').classList.add('hidden');
   if(answers[current]===null)return;
   if(current<questions.length-1){current++;renderQuestion();}else showResults();
 }
