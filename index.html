@@ -92,6 +92,10 @@ h1,h2,h3,h4{color:var(--navy)}
 .your-label{color:var(--blue)!important}
 input,textarea,select{border:1px solid #C8D7E5!important;background:#fff!important}
 input:focus,textarea:focus,select:focus{border-color:var(--blue)!important;box-shadow:0 0 0 3px rgba(0,87,168,.10)!important;outline:none}
+
+.option.locked{cursor:not-allowed!important;opacity:.96}
+.option.locked:hover{transform:none!important;box-shadow:none!important}
+.option.locked:not(.selected){opacity:.72}
 </style>
 </head>
 <body>
@@ -146,9 +150,9 @@ input:focus,textarea:focus,select:focus{border-color:var(--blue)!important;box-s
 
   <div id="choiceModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
     <div class="modal-card">
-      <h2 id="modalTitle">Decision feedback</h2>
+      <h2 id="modalTitle">Decision locked ✓</h2>
       <div class="modal-section modal-your">
-        <div class="your-label">Your choice</div>
+        <div class="your-label">Your choice — locked in</div>
         <div id="modalYour"></div>
       </div>
       <div class="modal-section modal-best">
@@ -522,6 +526,10 @@ function renderQuestion(){
     b.className="option"+(answers[current]===actualIndex?" selected":"");
     b.innerHTML=`<strong>${String.fromCharCode(65+displayIndex)}.</strong> ${text}`;
     b.onclick=()=>selectAnswer(actualIndex);
+    if(answers[current]!==null){
+      b.disabled=true;
+      b.classList.add("locked");
+    }
     wrap.appendChild(b);
   });
   const f=document.getElementById("feedback");
@@ -532,11 +540,16 @@ function renderQuestion(){
   next.textContent=current===questions.length-1?"Finish assessment →":"Next decision →";
 }
 function selectAnswer(i){
+  if(answers[current]!==null) return; // Lock the decision after the first selection.
+
   answers[current]=i;
   document.querySelectorAll(".option").forEach((b,j)=>{
     const actualIndex=questions[current]._displayOrder[j];
     b.classList.toggle("selected",actualIndex===i);
+    b.classList.add("locked");
+    b.disabled=true;
   });
+
   const q=questions[current];
   const quality=q.scores.map((arr,idx)=>({
     idx,
